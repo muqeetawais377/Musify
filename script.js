@@ -13,18 +13,12 @@ function secondsToMinutesSeconds(seconds) {
 }
 
 async function getSongs(folder) {
-    console.log("[getSongs] folder:", folder);
     currentFolder = folder;
-
     try {
-        // Use relative path
         let res = await fetch(`${folder}/songs.json`);
-        console.log("[getSongs] fetch songs.json response:", res);
         songs = await res.json();
-        console.log("[getSongs] songs loaded from json:", songs);
         songs = songs.map(s => `${folder}/${s}`);
     } catch (err) {
-        console.error("[getSongs] Error fetching songs.json:", err);
         songs = [];
     }
 
@@ -50,37 +44,28 @@ async function getSongs(folder) {
 }
 
 const playMusic = (track, pause=false) => {
-    console.log("[playMusic] track:", track, "pause:", pause);
-    currentSong.src = `${track}`; // relative path
+    currentSong.src = `${track}`;
     if(!pause) {
         currentSong.play();
         play.src = "images/pause.svg";
     }
-
     let cleanName = decodeURIComponent(track.split("/").pop());
     document.querySelector(".songinfo").innerHTML = cleanName;
     document.querySelector(".songtime").innerHTML = "00:00 / 00:00";
 }
 
 async function displayAlbums() {
-    console.log("[displayAlbums] fetching index.json");
     try {
-        // Use relative path
         let res = await fetch(`songs/index.json`);
-        console.log("[displayAlbums] fetch response:", res);
         let data = await res.json();
-        console.log("[displayAlbums] parsed JSON:", data);
         let albums = data.albums;
 
         let cardContainer = document.querySelector(".cardContainer");
         cardContainer.innerHTML = "";
 
         for (const folder of albums) {
-            console.log("[displayAlbums] processing folder:", folder);
             let infoRes = await fetch(`songs/${folder}/info.json`);
-            console.log("[displayAlbums] info.json response:", infoRes);
             let info = await infoRes.json();
-            console.log("[displayAlbums] info.json parsed:", info);
 
             cardContainer.innerHTML += `<div data-folder="${folder}" class="card">
                 <div class="play-btn">
@@ -98,25 +83,22 @@ async function displayAlbums() {
 
         Array.from(document.getElementsByClassName("card")).forEach(e => {
             e.addEventListener("click", async item => {
-                console.log("[displayAlbums] clicked card:", item.currentTarget.dataset.folder);
                 songs = await getSongs(`songs/${item.currentTarget.dataset.folder}`);
                 playMusic(songs[0]);
             });
         });
 
     } catch (err) {
-        console.error("[displayAlbums] Error fetching index.json or albums:", err);
+        console.error("Error fetching index.json or albums:", err);
     }
 }
 
 async function main() {
-    console.log("[main] Starting main");
     await displayAlbums();
 
     let firstCard = document.querySelector(".card");
     if(firstCard) {
         let firstFolder = firstCard.dataset.folder;
-        console.log("[main] first folder:", firstFolder);
         songs = await getSongs(`songs/${firstFolder}`);
         playMusic(songs[0], true);
     }
