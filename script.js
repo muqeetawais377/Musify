@@ -15,26 +15,10 @@ function secondsToMinutesSeconds(seconds) {
 
 async function getSongs(folder) {
     currentFolder = folder;
+    let res = await fetch(`${BASE_URL}/${folder}/songs.json`);
+    songs = await res.json();
+    songs = songs.map(s => `${folder}/${s}`);
 
-    // fetch the folder's mp3 files using info.json
-    let a = await fetch(`${BASE_URL}/${folder}/`);
-    let response = await a.text();
-    
-    let div = document.createElement("div");
-    div.innerHTML = response;
-    let as = div.getElementsByTagName("a");
-    songs = [];
-
-    for (let i = 0; i < as.length; i++) {
-        const el = as[i];
-        if (el.href.toLowerCase().endsWith(".mp3")) {
-            let url = new URL(el.href);
-            let fullPath = url.pathname.replace(/%5C/g, "/");
-            songs.push(fullPath);
-        }
-    }
-
-    // Populate the song list
     let songUL = document.querySelector(".songsList ul");
     songUL.innerHTML = "";
     for (const song of songs) {
@@ -52,12 +36,10 @@ async function getSongs(folder) {
         </li>`;
     }
 
-    Array.from(songUL.getElementsByTagName("li")).forEach((e,i)=>{
-        e.addEventListener("click",()=>playMusic(songs[i]));
-    });
-
+    Array.from(songUL.getElementsByTagName("li")).forEach((e,i)=>e.addEventListener("click",()=>playMusic(songs[i])));
     return songs;
 }
+
 
 const playMusic = (track, pause=false) => {
     currentSong.src = `${BASE_URL}${track}`;
