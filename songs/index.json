@@ -1,3 +1,6 @@
 {
-    "albums": ["album1", "album2"]
-  }
+  "albums": [
+    "album1",
+    "album2"
+  ]
+}

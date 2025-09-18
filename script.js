@@ -1,10 +1,9 @@
-const BASE_URL = window.location.origin;
 let currentSong = new Audio();
 let songs;
 let currentFolder;
-let play = document.getElementById("play")
-let previous = document.getElementById("previous")
-let forward = document.getElementById("forward")
+let play = document.getElementById("play");
+let previous = document.getElementById("previous");
+let forward = document.getElementById("forward");
 
 function secondsToMinutesSeconds(seconds) {
     if (isNaN(seconds)) return "00:00";
@@ -18,7 +17,8 @@ async function getSongs(folder) {
     currentFolder = folder;
 
     try {
-        let res = await fetch(`${BASE_URL}/${folder}/songs.json`);
+        // Use relative path
+        let res = await fetch(`${folder}/songs.json`);
         console.log("[getSongs] fetch songs.json response:", res);
         songs = await res.json();
         console.log("[getSongs] songs loaded from json:", songs);
@@ -49,10 +49,9 @@ async function getSongs(folder) {
     return songs;
 }
 
-
 const playMusic = (track, pause=false) => {
     console.log("[playMusic] track:", track, "pause:", pause);
-    currentSong.src = `${BASE_URL}${track}`;
+    currentSong.src = `${track}`; // relative path
     if(!pause) {
         currentSong.play();
         play.src = "images/pause.svg";
@@ -66,7 +65,8 @@ const playMusic = (track, pause=false) => {
 async function displayAlbums() {
     console.log("[displayAlbums] fetching index.json");
     try {
-        let res = await fetch(`${BASE_URL}/songs/index.json`);
+        // Use relative path
+        let res = await fetch(`songs/index.json`);
         console.log("[displayAlbums] fetch response:", res);
         let data = await res.json();
         console.log("[displayAlbums] parsed JSON:", data);
@@ -77,7 +77,7 @@ async function displayAlbums() {
 
         for (const folder of albums) {
             console.log("[displayAlbums] processing folder:", folder);
-            let infoRes = await fetch(`${BASE_URL}/songs/${folder}/info.json`);
+            let infoRes = await fetch(`songs/${folder}/info.json`);
             console.log("[displayAlbums] info.json response:", infoRes);
             let info = await infoRes.json();
             console.log("[displayAlbums] info.json parsed:", info);
@@ -108,7 +108,6 @@ async function displayAlbums() {
         console.error("[displayAlbums] Error fetching index.json or albums:", err);
     }
 }
-
 
 async function main() {
     console.log("[main] Starting main");
@@ -149,14 +148,14 @@ async function main() {
 
     previous.addEventListener("click", ()=>{
         currentSong.pause();
-        let currentPath = currentSong.src.replace(BASE_URL,"");
+        let currentPath = currentSong.src.replace(window.location.href,"");
         let index = songs.indexOf(currentPath);
         if(index>0) playMusic(songs[index-1]);
     });
 
     forward.addEventListener("click", ()=>{
         currentSong.pause();
-        let currentPath = currentSong.src.replace(BASE_URL,"");
+        let currentPath = currentSong.src.replace(window.location.href,"");
         let index = songs.indexOf(currentPath);
         if(index<songs.length-1) playMusic(songs[index+1]);
     });
