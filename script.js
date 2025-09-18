@@ -72,6 +72,7 @@ const playMusic = (track, pause=false) => {
 }
 
 async function displayAlbums() {
+    // Fetch the static list of albums
     let res = await fetch(`${BASE_URL}/songs/index.json`);
     let data = await res.json();
     let albums = data.albums;
@@ -80,8 +81,6 @@ async function displayAlbums() {
     cardContainer.innerHTML = "";
 
     for (const folder of albums) {
-        if(folder.startsWith(".") || folder.includes(".DS_Store")) continue;
-
         let infoRes = await fetch(`${BASE_URL}/songs/${folder}/info.json`);
         let info = await infoRes.json();
 
@@ -89,7 +88,7 @@ async function displayAlbums() {
             <div class="play-btn">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
                     <g transform="translate(0,-75)">
-                        <path fill="#000000" d="M187.2 100.9C174.8 94.1 159.8 94.4 147.6 101.6C135.4 108.8 128 121.9 128 136L128 504C128 518.1 135.5 531.2 147.6 538.4C159.7 545.6 174.8 545.9 187.2 539.1L523.2 355.1C536 348.1 544 334.6 544 320C544 305.4 536 291.9 523.2 284.9L187.2 100.9z" />
+                        <path fill="#000000" d="M187.2 100.9C174.8 94.1 159.8 94.4 147.6 101.6C135.4 108.8 128 121.9 128 136L128 504C128 518.1 135.5 531.2 147.6 538.4C159.7 545.6 174.8 545.9 187.2 539.1L523.2 355.1C536 348.1 544 334.6 544 320C544 305.4 536 291.9 523.2 284.9L187.2 100.9z"/>
                     </g>
                 </svg>
             </div>
@@ -106,6 +105,7 @@ async function displayAlbums() {
         });
     });
 }
+
 
 async function main() {
     await displayAlbums();
