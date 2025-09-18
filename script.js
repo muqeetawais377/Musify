@@ -14,10 +14,19 @@ function secondsToMinutesSeconds(seconds) {
 }
 
 async function getSongs(folder) {
+    console.log("[getSongs] folder:", folder);
     currentFolder = folder;
-    let res = await fetch(`${BASE_URL}/${folder}/songs.json`);
-    songs = await res.json();
-    songs = songs.map(s => `${folder}/${s}`);
+
+    try {
+        let res = await fetch(`${BASE_URL}/${folder}/songs.json`);
+        console.log("[getSongs] fetch songs.json response:", res);
+        songs = await res.json();
+        console.log("[getSongs] songs loaded from json:", songs);
+        songs = songs.map(s => `${folder}/${s}`);
+    } catch (err) {
+        console.error("[getSongs] Error fetching songs.json:", err);
+        songs = [];
+    }
 
     let songUL = document.querySelector(".songsList ul");
     songUL.innerHTML = "";
@@ -42,6 +51,7 @@ async function getSongs(folder) {
 
 
 const playMusic = (track, pause=false) => {
+    console.log("[playMusic] track:", track, "pause:", pause);
     currentSong.src = `${BASE_URL}${track}`;
     if(!pause) {
         currentSong.play();
@@ -54,47 +64,60 @@ const playMusic = (track, pause=false) => {
 }
 
 async function displayAlbums() {
-    // Fetch the static list of albums
-    let res = await fetch(`${BASE_URL}/songs/index.json`);
-    let data = await res.json();
-    let albums = data.albums;
+    console.log("[displayAlbums] fetching index.json");
+    try {
+        let res = await fetch(`${BASE_URL}/songs/index.json`);
+        console.log("[displayAlbums] fetch response:", res);
+        let data = await res.json();
+        console.log("[displayAlbums] parsed JSON:", data);
+        let albums = data.albums;
 
-    let cardContainer = document.querySelector(".cardContainer");
-    cardContainer.innerHTML = "";
+        let cardContainer = document.querySelector(".cardContainer");
+        cardContainer.innerHTML = "";
 
-    for (const folder of albums) {
-        let infoRes = await fetch(`${BASE_URL}/songs/${folder}/info.json`);
-        let info = await infoRes.json();
+        for (const folder of albums) {
+            console.log("[displayAlbums] processing folder:", folder);
+            let infoRes = await fetch(`${BASE_URL}/songs/${folder}/info.json`);
+            console.log("[displayAlbums] info.json response:", infoRes);
+            let info = await infoRes.json();
+            console.log("[displayAlbums] info.json parsed:", info);
 
-        cardContainer.innerHTML += `<div data-folder="${folder}" class="card">
-            <div class="play-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
-                    <g transform="translate(0,-75)">
-                        <path fill="#000000" d="M187.2 100.9C174.8 94.1 159.8 94.4 147.6 101.6C135.4 108.8 128 121.9 128 136L128 504C128 518.1 135.5 531.2 147.6 538.4C159.7 545.6 174.8 545.9 187.2 539.1L523.2 355.1C536 348.1 544 334.6 544 320C544 305.4 536 291.9 523.2 284.9L187.2 100.9z"/>
-                    </g>
-                </svg>
-            </div>
-            <img src="songs/${folder}/cover.jpeg" alt="">
-            <h2>${info.title}</h2>
-            <p>${info.description}</p>
-        </div>`;
-    }
+            cardContainer.innerHTML += `<div data-folder="${folder}" class="card">
+                <div class="play-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                        <g transform="translate(0,-75)">
+                            <path fill="#000000" d="M187.2 100.9C174.8 94.1 159.8 94.4 147.6 101.6C135.4 108.8 128 121.9 128 136L128 504C128 518.1 135.5 531.2 147.6 538.4C159.7 545.6 174.8 545.9 187.2 539.1L523.2 355.1C536 348.1 544 334.6 544 320C544 305.4 536 291.9 523.2 284.9L187.2 100.9z"/>
+                        </g>
+                    </svg>
+                </div>
+                <img src="songs/${folder}/cover.jpeg" alt="">
+                <h2>${info.title}</h2>
+                <p>${info.description}</p>
+            </div>`;
+        }
 
-    Array.from(document.getElementsByClassName("card")).forEach(e => {
-        e.addEventListener("click", async item => {
-            songs = await getSongs(`songs/${item.currentTarget.dataset.folder}`);
-            playMusic(songs[0]);
+        Array.from(document.getElementsByClassName("card")).forEach(e => {
+            e.addEventListener("click", async item => {
+                console.log("[displayAlbums] clicked card:", item.currentTarget.dataset.folder);
+                songs = await getSongs(`songs/${item.currentTarget.dataset.folder}`);
+                playMusic(songs[0]);
+            });
         });
-    });
+
+    } catch (err) {
+        console.error("[displayAlbums] Error fetching index.json or albums:", err);
+    }
 }
 
 
 async function main() {
+    console.log("[main] Starting main");
     await displayAlbums();
 
     let firstCard = document.querySelector(".card");
     if(firstCard) {
         let firstFolder = firstCard.dataset.folder;
+        console.log("[main] first folder:", firstFolder);
         songs = await getSongs(`songs/${firstFolder}`);
         playMusic(songs[0], true);
     }
