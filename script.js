@@ -14,42 +14,16 @@ function secondsToMinutesSeconds(seconds) {
 
 async function getSongs(folder) {
     currentFolder = folder;
-    songs = [];
-
     try {
-        // Fetch the folder listing (works if you serve the folder via a server)
-        let res = await fetch(`${folder}/`);
-        let text = await res.text();
-
-        // Parse HTML and find all <a> links ending with .mp3
-        let div = document.createElement("div");
-        div.innerHTML = text;
-        let links = div.getElementsByTagName("a");
-
-        for (let i = 0; i < links.length; i++) {
-            let href = links[i].getAttribute("href");
-            if (href && href.toLowerCase().endsWith(".mp3")) {
-                songs.push(`${folder}/${href}`);
-            }
-        }
-
+        let res = await fetch(`${folder}/songs.json`);
+        songs = await res.json();
+        songs = songs.map(s => `${folder}/${s}`);
     } catch (err) {
-        console.error("[getSongs] Failed to auto-scan folder, falling back to songs.json:", err);
-
-        // Fallback to songs.json if folder listing fails
-        try {
-            let res = await fetch(`${folder}/songs.json`);
-            let jsonSongs = await res.json();
-            songs = jsonSongs.map(s => `${folder}/${s}`);
-        } catch (jsonErr) {
-            console.error("[getSongs] Failed to load songs.json:", jsonErr);
-            songs = [];
-        }
+        songs = [];
     }
 
     let songUL = document.querySelector(".songsList ul");
     songUL.innerHTML = "";
-
     for (const song of songs) {
         let fileName = decodeURIComponent(song.split("/").pop());
         songUL.innerHTML += `<li>
@@ -66,10 +40,8 @@ async function getSongs(folder) {
     }
 
     Array.from(songUL.getElementsByTagName("li")).forEach((e, i) => e.addEventListener("click", () => playMusic(songs[i])));
-
     return songs;
 }
-
 
 const playMusic = (track, pause = false) => {
     currentSong.src = `${track}`;
