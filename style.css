@@ -65,7 +65,7 @@ body {
 
 
 .library {
-    min-height: 80vh;
+    min-height: 85vh;
     position: relative;
 
 }
@@ -356,6 +356,10 @@ body {
         height: 100vh;
         position: fixed;
         top: 0;
+    }
+
+    .library {
+        height: 85vh;
     }
 
     .songinfo {
