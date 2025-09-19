@@ -129,17 +129,19 @@ async function main() {
     document.querySelector(".closehamburger").addEventListener("click", () => { document.querySelector(".left").style.left = "-120%" });
 
     previous.addEventListener("click", () => {
-        currentSong.pause();
-        let currentPath = new URL(currentSong.src).pathname.substring(1);
+        let currentPath = currentSong.src.replace(window.location.origin + "/", "");
         let index = songs.indexOf(currentPath);
-        if (index > 0) playMusic(songs[index - 1]);
+        if (index > 0) {
+            playMusic(songs[index - 1]);
+        }
     });
-
+    
     forward.addEventListener("click", () => {
-        currentSong.pause();
-        let currentPath = new URL(currentSong.src).pathname.substring(1);
+        let currentPath = currentSong.src.replace(window.location.origin + "/", "");
         let index = songs.indexOf(currentPath);
-        if (index < songs.length - 1) playMusic(songs[index + 1]);
+        if (index < songs.length - 1) {
+            playMusic(songs[index + 1]);
+        }
     });
 
     document.querySelector(".range input").addEventListener("change", (e) => {
