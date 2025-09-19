@@ -130,14 +130,14 @@ async function main() {
 
     previous.addEventListener("click", () => {
         currentSong.pause();
-        let currentPath = currentSong.src.replace(window.location.href, "");
+        let currentPath = new URL(currentSong.src).pathname.substring(1);
         let index = songs.indexOf(currentPath);
         if (index > 0) playMusic(songs[index - 1]);
     });
 
     forward.addEventListener("click", () => {
         currentSong.pause();
-        let currentPath = currentSong.src.replace(window.location.href, "");
+        let currentPath = new URL(currentSong.src).pathname.substring(1);
         let index = songs.indexOf(currentPath);
         if (index < songs.length - 1) playMusic(songs[index + 1]);
     });
