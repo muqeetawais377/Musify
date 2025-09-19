@@ -1,4 +1,5 @@
 let currentSong = new Audio();
+let currentSongIndex = 0;
 let songs;
 let currentFolder;
 let play = document.getElementById("play");
@@ -44,6 +45,7 @@ async function getSongs(folder) {
 }
 
 const playMusic = (track, pause = false) => {
+    currentSongIndex = index;
     currentSong.pause();
     currentSong.src = `${track}`;
     if (!pause) {
@@ -134,16 +136,17 @@ async function main() {
     }    
     
     forward.addEventListener("click", () => {
-        let currentPath = normalizePath(currentSong.src);
-        let index = songs.findIndex(s => normalizePath(s) === currentPath);
-        if (index < songs.length - 1) playMusic(songs[index + 1]);
+        if (currentSongIndex < songs.length - 1) {
+            playMusic(songs[currentSongIndex + 1], false, currentSongIndex + 1);
+        }
     });
     
     previous.addEventListener("click", () => {
-        let currentPath = normalizePath(currentSong.src);
-        let index = songs.findIndex(s => normalizePath(s) === currentPath);
-        if (index > 0) playMusic(songs[index - 1]);
+        if (currentSongIndex > 0) {
+            playMusic(songs[currentSongIndex - 1], false, currentSongIndex - 1);
+        }
     });
+    
     
 
     document.querySelector(".range input").addEventListener("change", (e) => {
