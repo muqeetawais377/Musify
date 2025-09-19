@@ -1,5 +1,4 @@
 let currentSong = new Audio();
-let currentSongIndex = 0;
 let songs;
 let currentFolder;
 let play = document.getElementById("play");
@@ -45,7 +44,6 @@ async function getSongs(folder) {
 }
 
 const playMusic = (track, pause = false) => {
-    currentSongIndex = index;
     currentSong.pause();
     currentSong.src = `${track}`;
     if (!pause) {
@@ -131,23 +129,19 @@ async function main() {
     document.querySelector(".hamburger").addEventListener("click", () => { document.querySelector(".left").style.left = "0" });
     document.querySelector(".closehamburger").addEventListener("click", () => { document.querySelector(".left").style.left = "-120%" });
 
-    function normalizePath(path) {
-        return decodeURIComponent(new URL(path, window.location.origin).pathname.substring(1));
-    }    
-    
-    forward.addEventListener("click", () => {
-        if (currentSongIndex < songs.length - 1) {
-            playMusic(songs[currentSongIndex + 1], false, currentSongIndex + 1);
-        }
-    });
-    
     previous.addEventListener("click", () => {
-        if (currentSongIndex > 0) {
-            playMusic(songs[currentSongIndex - 1], false, currentSongIndex - 1);
-        }
+        currentSong.pause();
+        let currentPath = currentSong.src.replace(window.location.href, "");
+        let index = songs.indexOf(currentPath);
+        if (index > 0) playMusic(songs[index - 1]);
     });
-    
-    
+
+    forward.addEventListener("click", () => {
+        currentSong.pause();
+        let currentPath = currentSong.src.replace(window.location.href, "");
+        let index = songs.indexOf(currentPath);
+        if (index < songs.length - 1) playMusic(songs[index + 1]);
+    });
 
     document.querySelector(".range input").addEventListener("change", (e) => {
         currentSong.volume = parseInt(e.target.value) / 100;
