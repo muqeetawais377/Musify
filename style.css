@@ -426,6 +426,6 @@ body {
 
 @media (max-width: 500px) {
     .card {
-        width: 70vw;
+        width: 85vw;
     }
 }
