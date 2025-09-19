@@ -267,7 +267,7 @@ body {
     background-color: white;
     border-radius: 10px;
     position: absolute;
-    bottom: 0;
+    bottom: 8px;
     margin: 6px;
 }
 
@@ -353,6 +353,9 @@ body {
         width: 370px;
         background-color: black;
         padding: 0;
+        height: 100vh;
+        position: fixed;
+        top: 0;
     }
 
     .songinfo {
@@ -427,5 +430,15 @@ body {
 @media (max-width: 500px) {
     .card {
         width: 85vw;
+    }
+
+    .library {
+        height: 85vh;
+    }
+
+    .left {
+        position: fixed;
+        top: 0;
+        width: 100vw;
     }
 }
