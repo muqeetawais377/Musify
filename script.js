@@ -130,8 +130,8 @@ async function main() {
     document.querySelector(".closehamburger").addEventListener("click", () => { document.querySelector(".left").style.left = "-120%" });
 
     function normalizePath(path) {
-        return decodeURIComponent(new URL(path).pathname.substring(1));
-    }
+        return decodeURIComponent(new URL(path, window.location.origin).pathname.substring(1));
+    }    
     
     forward.addEventListener("click", () => {
         let currentPath = normalizePath(currentSong.src);
