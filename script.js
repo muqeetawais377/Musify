@@ -136,21 +136,27 @@ async function main() {
         if (relative.startsWith("/")) relative = relative.slice(1);
         return relative;
     }
-    
+
     previous.addEventListener("click", () => {
         currentSong.pause();
         let currentPath = normalizePath(currentSong.src);
         let index = songs.findIndex(s => normalizePath(s) === currentPath);
-        if (index > 0) playMusic(songs[index - 1]);
+        if (index > 0) {
+            playMusic(songs[index - 1]);
+        } else {
+            currentSong.currentTime = 0;
+            currentSong.play();
+            play.src = "images/pause.svg";
+        }
     });
-    
+
     forward.addEventListener("click", () => {
         currentSong.pause();
         let currentPath = normalizePath(currentSong.src);
         let index = songs.findIndex(s => normalizePath(s) === currentPath);
         if (index < songs.length - 1) playMusic(songs[index + 1]);
     });
-    
+
     document.querySelector(".range input").addEventListener("change", (e) => {
         currentSong.volume = parseInt(e.target.value) / 100;
     });
