@@ -129,20 +129,28 @@ async function main() {
     document.querySelector(".hamburger").addEventListener("click", () => { document.querySelector(".left").style.left = "0" });
     document.querySelector(".closehamburger").addEventListener("click", () => { document.querySelector(".left").style.left = "-120%" });
 
+    function normalizePath(path) {
+        // Remove origin and leading slash
+        let url = new URL(path, window.location.href);
+        let relative = url.pathname;
+        if (relative.startsWith("/")) relative = relative.slice(1);
+        return relative;
+    }
+    
     previous.addEventListener("click", () => {
         currentSong.pause();
-        let currentPath = currentSong.src.replace(window.location.href, "");
-        let index = songs.indexOf(currentPath);
+        let currentPath = normalizePath(currentSong.src);
+        let index = songs.findIndex(s => normalizePath(s) === currentPath);
         if (index > 0) playMusic(songs[index - 1]);
     });
-
+    
     forward.addEventListener("click", () => {
         currentSong.pause();
-        let currentPath = currentSong.src.replace(window.location.href, "");
-        let index = songs.indexOf(currentPath);
+        let currentPath = normalizePath(currentSong.src);
+        let index = songs.findIndex(s => normalizePath(s) === currentPath);
         if (index < songs.length - 1) playMusic(songs[index + 1]);
     });
-
+    
     document.querySelector(".range input").addEventListener("change", (e) => {
         currentSong.volume = parseInt(e.target.value) / 100;
     });
